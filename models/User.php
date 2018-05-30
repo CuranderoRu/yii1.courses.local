@@ -2,6 +2,8 @@
 
 namespace app\models;
 
+use app\models\tables\Users;
+
 class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
 {
     public $id;
@@ -10,7 +12,7 @@ class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
     public $authKey;
     public $accessToken;
 
-    private static $users = [
+    /*private static $users = [
         '100' => [
             'id' => '100',
             'username' => 'admin',
@@ -25,7 +27,7 @@ class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
             'authKey' => 'test101key',
             'accessToken' => '101-token',
         ],
-    ];
+    ];*/
 
 
     /**
@@ -33,7 +35,20 @@ class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
      */
     public static function findIdentity($id)
     {
-        return isset(self::$users[$id]) ? new static(self::$users[$id]) : null;
+        $user = Users::findOne($id);
+        if(isset($user)){
+            return new static([
+                'id' => $id,
+                'username' => $user->login,
+                'password' => $user->password,
+                'authKey' => $user->authKey,
+                'accessToken' => $user->accessToken,
+            ]);
+        }else{
+            return null;
+        }
+        //var_dump($user);
+        //return isset(self::$users[$id]) ? new static(self::$users[$id]) : null;
     }
 
     /**
@@ -41,13 +56,29 @@ class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
      */
     public static function findIdentityByAccessToken($token, $type = null)
     {
-        foreach (self::$users as $user) {
+
+        $sql = 'SELECT id FROM users WHERE accessToken=:value';
+        $id = Users::findBySql($sql, [':value' => $token])->all()[0]->getId();
+        if(!is_null($id)){
+            $user = Users::findOne($id);
+            return new static([
+                'id' => $user->id,
+                'username' => $user->login,
+                'password' => $user->password,
+                'authKey' => $user->authKey,
+                'accessToken' => $user->accessToken,
+            ]);
+        }else{
+            return null;
+        }
+
+        /*foreach (self::$users as $user) {
             if ($user['accessToken'] === $token) {
                 return new static($user);
             }
         }
 
-        return null;
+        return null;*/
     }
 
     /**
@@ -58,13 +89,30 @@ class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
      */
     public static function findByUsername($username)
     {
-        foreach (self::$users as $user) {
+
+        $sql = 'SELECT id FROM users WHERE name=:value';
+        $id = Users::findBySql($sql, [':value' => $username])->all()[0]->getId();
+        if(!is_null($id)){
+            $user = Users::findOne($id);
+            return new static([
+                'id' => $user->id,
+                'username' => $user->login,
+                'password' => $user->password,
+                'authKey' => $user->authKey,
+                'accessToken' => $user->accessToken,
+            ]);
+        }else{
+            return null;
+        }
+
+
+        /*foreach (self::$users as $user) {
             if (strcasecmp($user['username'], $username) === 0) {
                 return new static($user);
             }
         }
 
-        return null;
+        return null;*/
     }
 
     /**

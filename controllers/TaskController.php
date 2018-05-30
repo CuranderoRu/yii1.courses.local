@@ -30,4 +30,5 @@ class TaskController extends Controller
 
         return $this->render('index', ['title' => $model->title, 'content' => $model->content]);
     }
+
 }
