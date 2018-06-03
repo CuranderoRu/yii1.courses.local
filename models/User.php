@@ -11,6 +11,7 @@ class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
     public $password;
     public $authKey;
     public $accessToken;
+    public $role_id;
 
     /*private static $users = [
         '100' => [
@@ -43,6 +44,7 @@ class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
                 'password' => $user->password,
                 'authKey' => $user->authKey,
                 'accessToken' => $user->accessToken,
+                'role_id' => $user->role_id,
             ]);
         }else{
             return null;
@@ -57,28 +59,18 @@ class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
     public static function findIdentityByAccessToken($token, $type = null)
     {
 
-        $sql = 'SELECT id FROM users WHERE accessToken=:value';
-        $id = Users::findBySql($sql, [':value' => $token])->all()[0]->getId();
-        if(!is_null($id)){
-            $user = Users::findOne($id);
+        if($user = Users::findOne(['accessToken'=>$token])){
             return new static([
                 'id' => $user->id,
                 'username' => $user->login,
                 'password' => $user->password,
                 'authKey' => $user->authKey,
                 'accessToken' => $user->accessToken,
+                'role_id' => $user->role_id,
             ]);
-        }else{
-            return null;
         }
+        return null;
 
-        /*foreach (self::$users as $user) {
-            if ($user['accessToken'] === $token) {
-                return new static($user);
-            }
-        }
-
-        return null;*/
     }
 
     /**
@@ -90,29 +82,18 @@ class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
     public static function findByUsername($username)
     {
 
-        $sql = 'SELECT id FROM users WHERE name=:value';
-        $id = Users::findBySql($sql, [':value' => $username])->all()[0]->getId();
-        if(!is_null($id)){
-            $user = Users::findOne($id);
+        if($user = Users::findOne(['login'=>$username])){
             return new static([
                 'id' => $user->id,
                 'username' => $user->login,
                 'password' => $user->password,
                 'authKey' => $user->authKey,
                 'accessToken' => $user->accessToken,
+                'role_id' => $user->role_id,
             ]);
-        }else{
-            return null;
         }
+        return null;
 
-
-        /*foreach (self::$users as $user) {
-            if (strcasecmp($user['username'], $username) === 0) {
-                return new static($user);
-            }
-        }
-
-        return null;*/
     }
 
     /**
@@ -149,4 +130,13 @@ class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
     {
         return $this->password === $password;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getRoleId()
+    {
+        return $this->role_id;
+    }
+
 }
