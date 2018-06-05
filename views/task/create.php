@@ -4,6 +4,11 @@
 use \yii\widgets\ActiveForm;
 use \yii\helpers\Html;
 
+$this->title = 'Update Task: ' . $model->name;
+$this->params['breadcrumbs'][] = ['label' => 'Tasks', 'url' => ['index']];
+$this->params['breadcrumbs'][] = 'Create';
+
+
 $form = ActiveForm::begin([
     'id' => 'create_task',
     'options' => [

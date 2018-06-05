@@ -29,9 +29,12 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'attributes' => [
             'id',
-            'name',
+            [
+                'label' => 'Название задачи',
+                'value' => $model->name
+            ],
             'date',
-            'description:ntext',
+            'description:html',
             'user_id',
         ],
     ]) ?>

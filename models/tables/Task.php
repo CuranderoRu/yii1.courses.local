@@ -12,6 +12,8 @@ use Yii;
  * @property string $date
  * @property string $description
  * @property int $user_id
+ * @property int $created_at
+ * @property int $updated_at
  *
  * @property Users $user
  */
@@ -59,6 +61,26 @@ class Task extends \yii\db\ActiveRecord
      */
     public function getUser()
     {
-        return $this->hasOne(Users::className(), ['id' => 'user_id']);
+        return $this->hasOne(Users::class, ['id' => 'user_id']);
     }
+
+    public static function getByCurrentMonth($userId)
+    {
+        return static::find()
+            ->where(['user_id' => $userId])
+            ->andWhere(['MONTH(date)' => date('n')])
+            ->all();
+    }
+
+    public static function getByUserAndDate($userId, $date)
+    {
+        $timestamp = strtotime($date);
+        return static::find()
+            ->where(['user_id' => $userId])
+            ->andWhere(['YEAR(date)' => date('Y', $timestamp)])
+            ->andWhere(['MONTH(date)' => date('n', $timestamp)])
+            ->andWhere(['DAY(date)' => date('j', $timestamp)])
+            ->all();
+    }
+
 }

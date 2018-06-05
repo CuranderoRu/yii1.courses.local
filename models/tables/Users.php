@@ -14,6 +14,7 @@ use Yii;
  * @property int $role_id
  * @property string $authKey
  * @property string $accessToken
+ * @property string $email
  *
  * @property Roles $role
  */
@@ -38,6 +39,7 @@ class Users extends \yii\db\ActiveRecord
             [['name', 'login'], 'string', 'max' => 250],
             [['password'], 'string', 'max' => 100],
             [['login'], 'unique'],
+            [['email'], 'email'],
             [['role_id'], 'exist', 'skipOnError' => true, 'targetClass' => Roles::className(), 'targetAttribute' => ['role_id' => 'id']],
         ];
     }

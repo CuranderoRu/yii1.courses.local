@@ -2,32 +2,18 @@
 
 namespace app\controllers;
 
+use app\models\tables\Users;
 use Yii;
 use app\models\tables\Task;
-use app\models\tables\userTaskSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
+use yii\helpers\Html;
 
 /**
  * TaskController implements the CRUD actions for Task model.
  */
 class TaskController extends Controller
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function behaviors()
-    {
-        return [
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['POST'],
-                ],
-            ],
-        ];
-    }
 
     /**
      * Lists all Task models.
@@ -35,15 +21,29 @@ class TaskController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new userTaskSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        //$dataProvider = $searchModel->search(['user_id'=>\Yii::$app->user->getId()]);
+        $userId = \Yii::$app->user->getId();
+        $calendar = array_fill_keys(range(1, date("t")), []);
 
-        return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
+        foreach (Task::getByCurrentMonth($userId) as $task){
+            $date = \DateTime::createFromFormat("Y-m-d H:i:s", $task->date);
+            $calendar[$date->format("j")][] = $task;
+        }
+
+        return $this->render('index', ['calendar' => $calendar]);
+
     }
+
+    /**
+     * Displays a single Task model.
+     * @param mixed $date
+     * @return mixed
+     */
+    public function actionEvents($date)
+    {
+        $events = Task::getByUserAndDate(\Yii::$app->user->getId(), $date);
+        return $this->render('events', ['events' => $events, 'date' => $date]);
+    }
+
 
     /**
      * Displays a single Task model.
@@ -66,6 +66,17 @@ class TaskController extends Controller
     public function actionCreate()
     {
         $model = new Task();
+
+        $model->on(Task::EVENT_AFTER_INSERT, function($event){
+            $user = Users::findOne($event->sender->user_id);
+
+            Yii::$app->mailer->compose()
+                ->setTo($user->email)
+                ->setFrom([$user->email => $user->name])
+                ->setSubject('New task created -- ' . $event->sender->name)
+                ->setTextBody(Html::a('Task link', ['view', 'id' => $event->sender->id]))
+                ->send();
+        });
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
@@ -110,13 +121,6 @@ class TaskController extends Controller
         return $this->redirect(['index']);
     }
 
-    /**
-     * Finds the Task model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param integer $id
-     * @return Task the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
     protected function findModel($id)
     {
         if (($model = Task::findOne($id)) !== null) {
