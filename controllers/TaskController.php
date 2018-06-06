@@ -5,6 +5,7 @@ namespace app\controllers;
 use app\models\tables\Users;
 use Yii;
 use app\models\tables\Task;
+use yii\behaviors\TimestampBehavior;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\helpers\Html;
@@ -78,6 +79,8 @@ class TaskController extends Controller
                 ->send();
         });
 
+        $model->attachBehavior('datechange',['class' => TimestampBehavior::class, 'value' => date("Y-m-d H:i:s")]);
+
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         }
@@ -97,6 +100,8 @@ class TaskController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+
+        $model->attachBehavior('datechange',['class' => TimestampBehavior::class, 'value' => date("Y-m-d H:i:s")]);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);

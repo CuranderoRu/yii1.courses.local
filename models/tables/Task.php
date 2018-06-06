@@ -2,6 +2,7 @@
 
 namespace app\models\tables;
 
+use app\models\behaviors\ChangeTracker;
 use Yii;
 
 /**
@@ -82,5 +83,16 @@ class Task extends \yii\db\ActiveRecord
             ->andWhere(['DAY(date)' => date('j', $timestamp)])
             ->all();
     }
+
+    public function behaviors()
+    {
+        return [
+            'tracker' => [
+                'class' => ChangeTracker::class,
+                'created_date' => date("Y-m-d H:i:s")
+            ]
+        ];
+    }
+
 
 }
