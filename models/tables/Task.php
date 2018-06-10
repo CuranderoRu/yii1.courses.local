@@ -1,9 +1,7 @@
 <?php
 
 namespace app\models\tables;
-
-use app\models\behaviors\ChangeTracker;
-use Yii;
+use yii\caching\DbDependency;
 
 /**
  * This is the model class for table "task".
@@ -18,7 +16,7 @@ use Yii;
  *
  * @property Users $user
  */
-class Task extends \yii\db\ActiveRecord
+class Task extends ActiveRecord
 {
     /**
      * {@inheritdoc}
@@ -67,10 +65,28 @@ class Task extends \yii\db\ActiveRecord
 
     public static function getByCurrentMonth($userId)
     {
-        return static::find()
-            ->where(['user_id' => $userId])
-            ->andWhere(['MONTH(date)' => date('n')])
-            ->all();
+
+        $cache = \Yii::$app->redis_cache;
+        $key =  'tasklist' . $userId;
+        $dependency = new DbDependency();
+        $dependency->sql = "SELECT Count(*) FROM task WHERE user_id = :user_id";
+        $dependency->params = ['user_id' => $userId];
+
+        if ($cache->exists($key)){
+            return $cache->get($key);
+        }else{
+            $val = static::find()
+                ->where(['user_id' => $userId])
+                ->andWhere(['MONTH(date)' => date('n')])
+                ->all();
+
+            $cache->set($key, $val, 10);
+
+
+            return $val;
+        }
+
+
     }
 
     public static function getByUserAndDate($userId, $date)
@@ -83,16 +99,5 @@ class Task extends \yii\db\ActiveRecord
             ->andWhere(['DAY(date)' => date('j', $timestamp)])
             ->all();
     }
-
-    public function behaviors()
-    {
-        return [
-            'tracker' => [
-                'class' => ChangeTracker::class,
-                'created_date' => date("Y-m-d H:i:s")
-            ]
-        ];
-    }
-
 
 }

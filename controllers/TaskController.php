@@ -79,7 +79,7 @@ class TaskController extends Controller
                 ->send();
         });
 
-        $model->attachBehavior('datechange',['class' => TimestampBehavior::class, 'value' => date("Y-m-d H:i:s")]);
+        //$model->attachBehavior('datechange',['class' => TimestampBehavior::class, 'value' => date("Y-m-d H:i:s")]);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
