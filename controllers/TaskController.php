@@ -2,6 +2,8 @@
 
 namespace app\controllers;
 
+use app\models\Comment;
+use app\models\tables\Comments;
 use app\models\tables\Users;
 use Yii;
 use app\models\tables\Task;
@@ -9,6 +11,7 @@ use yii\behaviors\TimestampBehavior;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\helpers\Html;
+use yii\web\UploadedFile;
 
 /**
  * TaskController implements the CRUD actions for Task model.
@@ -54,8 +57,24 @@ class TaskController extends Controller
      */
     public function actionView($id)
     {
+
+        $comment = new Comment();
+        $comment->user_id = \Yii::$app->user->getId();
+        $comment->task_id = $id;
+
+        if (\Yii::$app->request->isPost){
+            $comment->load(\Yii::$app->request->Post());
+            $comment->image = UploadedFile::getInstance($comment, 'image');
+            $comment->write();
+            $comment->body = "";
+        }
+
+        $comments = Comments::getByTask($id);
+
         return $this->render('view', [
             'model' => $this->findModel($id),
+            'comment' => $comment,
+            'comments' => $comments,
         ]);
     }
 
