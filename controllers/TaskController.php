@@ -33,7 +33,14 @@ class TaskController extends Controller
             $calendar[$date->format("j")][] = $task;
         }
 
-        return $this->render('index', ['calendar' => $calendar]);
+        return $this->render('index', [
+            'calendar' => $calendar,
+            'table_headers' => [
+                'Date' => \Yii::t('app', 'Date'),
+                'Event' => \Yii::t('app', 'Event'),
+                'Total' => \Yii::t('app', 'Total count'),
+            ]
+        ]);
 
     }
 

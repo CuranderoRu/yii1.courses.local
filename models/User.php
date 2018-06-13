@@ -13,6 +13,7 @@ class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
     public $accessToken;
     public $role_id;
     public $email;
+    public $locale;
 
     /*private static $users = [
         '100' => [
@@ -39,6 +40,8 @@ class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
     {
         $user = Users::findOne($id);
         if(isset($user)){
+            \Yii::$app->language = $user->locale;
+            $_SESSION["locale"] = $user->locale;
             return new static([
                 'id' => $id,
                 'username' => $user->login,
@@ -46,6 +49,8 @@ class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
                 'authKey' => $user->authKey,
                 'accessToken' => $user->accessToken,
                 'role_id' => $user->role_id,
+                'email' => $user->email,
+                'locale' => $user->locale,
             ]);
         }else{
             return null;

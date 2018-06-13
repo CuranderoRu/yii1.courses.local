@@ -1,19 +1,22 @@
 <?php
 /** @var array $tasks */
+/** @var array $table_headers */
 use yii\helpers\Html;
 use yii\helpers\Url;
 ?>
 
-<p>
-    <?= Html::a('Create Task', ['create'], ['class' => 'btn btn-success']) ?>
-</p>
+<div class="row">
+    <p class="col-md-6 text-left">
+        <?= Html::a('Create Task', ['create'], ['class' => 'btn btn-success']) ?>
+    </p>
+</div>
 
 
 <table class="table table-bordered">
     <tr>
-        <td>Дата</td>
-        <td>Событие</td>
-        <td>Всего событий</td>
+        <td><?= $table_headers['Date']; ?></td>
+        <td><?= $table_headers['Event']; ?></td>
+        <td><?= $table_headers['Total']; ?></td>
     </tr>
     <?php foreach ($calendar as $day => $events): ?>
         <tr>

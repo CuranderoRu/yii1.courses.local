@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\LanguageForm;
 use Yii;
 use yii\filters\AccessControl;
 use yii\filters\PageCache;
@@ -63,6 +64,15 @@ class SiteController extends Controller
         ];
     }
 
+    private function setGuestLocale()
+    {
+        if (Yii::$app->user->isGuest) {
+            if (isset($_SESSION["locale"])){
+                \Yii::$app->language = $_SESSION["locale"];
+            }
+        }
+    }
+
     /**
      * Displays homepage.
      *
@@ -70,6 +80,7 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
+        $this->setGuestLocale();
         return $this->render('index');
     }
 
@@ -80,6 +91,7 @@ class SiteController extends Controller
      */
     public function actionLogin()
     {
+        $this->setGuestLocale();
         if (!Yii::$app->user->isGuest) {
             return $this->goHome();
         }
@@ -107,6 +119,22 @@ class SiteController extends Controller
         return $this->goHome();
     }
 
+    public function actionLanguage()
+    {
+
+        $model = new LanguageForm();
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->goHome();
+        }
+
+        return $this->render('language', [
+            'model' => $model,
+            'options' => ['en-US' => 'English', 'ru-RU' => 'Русский'],
+        ]);
+    }
+
+
     /**
      * Displays contact page.
      *
@@ -114,6 +142,7 @@ class SiteController extends Controller
      */
     public function actionContact()
     {
+        $this->setGuestLocale();
         $model = new ContactForm();
         if ($model->load(Yii::$app->request->post()) && $model->contact(Yii::$app->params['adminEmail'])) {
             Yii::$app->session->setFlash('contactFormSubmitted');
@@ -132,6 +161,7 @@ class SiteController extends Controller
      */
     public function actionAbout()
     {
+        $this->setGuestLocale();
         return $this->render('about');
     }
 }

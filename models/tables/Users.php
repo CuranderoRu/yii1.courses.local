@@ -15,6 +15,7 @@ use Yii;
  * @property string $authKey
  * @property string $accessToken
  * @property string $email
+ * @property string $locale
  *
  * @property Roles $role
  */
