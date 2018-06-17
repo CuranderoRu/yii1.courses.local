@@ -25,6 +25,17 @@ $config = [
             ],
         ],
         'db' => $db,
+        'urlManager' => [
+            'baseUrl' => 'http://http://yii.courses.local/',
+            'enablePrettyUrl' => true,
+            'showScriptName' => false,
+            //'enableStrictParsing' => true, //только по правилам
+            'rules' => [
+                'calendar' => 'task/index',
+                'task/<id:\d+>' => 'task/view'
+            ],
+        ],
+
     ],
     'params' => $params,
     /*

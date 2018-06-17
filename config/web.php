@@ -12,6 +12,11 @@ $config = [
         '@bower' => '@vendor/bower-asset',
         '@npm'   => '@vendor/npm-asset',
     ],
+    'modules' => [
+        'admin' => [
+            'class' => 'app\modules\admin\Admin',
+        ],
+    ],
     'components' => [
         'i18n' => [
             'translations' => [
@@ -61,14 +66,15 @@ $config = [
             ],
         ],
         'db' => $db,
-        /*
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
+            //'enableStrictParsing' => true, //только по правилам
             'rules' => [
+                'calendar' => 'task/index',
+                'task/<id:\d+>' => 'task/view'
             ],
         ],
-        */
     ],
     'params' => $params,
 ];

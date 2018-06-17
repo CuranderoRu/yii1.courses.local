@@ -20,6 +20,7 @@ echo $form->field($model, 'name')->textInput();
 echo $form->field($model, 'date')->textInput(['type' => 'date']);
 echo $form->field($model, 'description')->textarea();
 echo $form->field($model, 'user_id')->textInput();
+echo $form->field($model, 'deadline')->textInput(['type' => 'date']);
 
 echo Html::submitButton('Создать', ['class' => 'btn btn-success']);
 

@@ -13,6 +13,7 @@ use yii\caching\DbDependency;
  * @property int $user_id
  * @property int $created_at
  * @property int $updated_at
+ * @property int $deadline
  *
  * @property Users $user
  */
@@ -33,7 +34,7 @@ class Task extends ActiveRecord
     {
         return [
             [['name', 'date', 'user_id'], 'required'],
-            [['date'], 'safe'],
+            [['date', 'deadline'], 'safe'],
             [['description'], 'string'],
             [['user_id'], 'integer'],
             [['name'], 'string', 'max' => 250],
@@ -49,7 +50,8 @@ class Task extends ActiveRecord
         return [
             'id' => 'ID',
             'name' => 'Название',
-            'date' => 'Дата исполнения',
+            'date' => 'Дата создания',
+            'deadline' => 'Дата исполнения',
             'description' => 'Описание',
             'user_id' => 'Пользователь',
         ];
@@ -61,6 +63,19 @@ class Task extends ActiveRecord
     public function getUser()
     {
         return $this->hasOne(Users::class, ['id' => 'user_id']);
+    }
+
+    public static function getByDeadline($days)
+    {
+
+        $now = date('Y-m-d H:i:s');
+        $stop_date = new \DateTime();
+        $stop_date->add(new \DateInterval('P' . $days . 'D'));
+        $stop_date = $stop_date->format('Y-m-d H:i:s');
+        return static::find()
+            ->where('deadline >= :now', [':now' => $now])
+            ->andWhere('deadline <= :stop_date', [':stop_date' => $stop_date])
+            ->all();
     }
 
     public static function getByCurrentMonth($userId)
