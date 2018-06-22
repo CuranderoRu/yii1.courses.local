@@ -8,6 +8,7 @@ use app\models\tables\Users;
 use Yii;
 use app\models\tables\Task;
 use yii\behaviors\TimestampBehavior;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\helpers\Html;
@@ -160,4 +161,28 @@ class TaskController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
+
+    public function behaviors()
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::class,
+                'rules' => [
+                    [
+                        'actions' => ['index', 'create', 'update', 'view'],
+                        'allow' => true,
+                        'roles' => ['createTask', 'updateTask', 'manageTasks']
+                    ],
+                    [
+                        'actions' => ['delete'],
+                        'allow' => true,
+                        'roles' => ['deleteTask', 'manageTasks']
+                    ],
+
+                ],
+            ],
+            ];
+    }
+
+
 }

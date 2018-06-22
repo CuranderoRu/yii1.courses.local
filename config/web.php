@@ -16,8 +16,24 @@ $config = [
         'admin' => [
             'class' => 'app\modules\admin\Admin',
         ],
+        'rbac' =>  [
+            'class' => 'johnitvn\rbacplus\Module',
+            'userModelClassName'=> \app\models\tables\Users::class,
+            'userModelIdField'=>'id',
+            'userModelLoginField'=>'login',
+            'userModelLoginFieldLabel'=>'Login',
+            'userModelExtraDataColumls'=>null,
+            'beforeCreateController'=>null,
+            'beforeAction'=>null
+        ],
+        'gridview' => [
+            'class' => 'kartik\grid\Module'
+        ],
     ],
     'components' => [
+        'authManager' => [
+            'class' => \yii\rbac\DbManager::class
+        ],
         'i18n' => [
             'translations' => [
                 'app*' => [
